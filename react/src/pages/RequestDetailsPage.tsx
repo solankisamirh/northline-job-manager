@@ -48,6 +48,7 @@ export default function RequestDetailsPage() {
 
   return (
     <section>
+        <title>{`${request.customerName} · Northline Job Manager`}</title>
       <Link to="/" className="back-link">← Back to requests</Link>
 
       <div className="page-header">

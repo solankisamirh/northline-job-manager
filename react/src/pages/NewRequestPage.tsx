@@ -96,6 +96,7 @@ export default function NewRequestPage() {
 
   return (
     <section>
+      <title>New request · Northline Job Manager</title>
       <Link to="/" className="back-link">← Back to requests</Link>
       <h1>New quote request</h1>
 

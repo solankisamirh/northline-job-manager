@@ -51,21 +51,22 @@ export default function DashboardPage() {
 
   return (
     <section>
+            <title>Dashboard · Northline Job Manager</title>
       <div className="page-header">
         <h1>Dashboard</h1>
         <Link to="/requests/new" className="button primary">+ New request</Link>
       </div>
 
-      <div className="stat-grid">
-        <div className="stat-card">
+            <div className="stat-grid">
+        <Link to="/" className="stat-card">
           <span className="stat-label">Total requests</span>
           <span className="stat-value">{summary.total}</span>
-        </div>
+        </Link>
         {STATUSES.map(status => (
-          <div key={status} className="stat-card">
+          <Link key={status} to={`/?status=${status}`} className="stat-card">
             <span className="stat-label"><StatusBadge status={status} /></span>
             <span className="stat-value">{countFor(status)}</span>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -75,7 +76,7 @@ export default function DashboardPage() {
           <ul className="bar-list">
             {serviceCounts.map(({ service, count }) => (
               <li key={service}>
-                <span>{service}</span>
+                                <Link to={`/?${new URLSearchParams({ serviceType: service })}`}>{service}</Link>
                 <span className="bar-track" aria-hidden="true">
                   <span
                     className="bar-fill"

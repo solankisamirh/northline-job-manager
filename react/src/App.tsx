@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage'
 export default function App() {
   return (
     <div className="app">
+            <a href="#main" className="skip-link">Skip to main content</a>
       <header className="app-header">
         <span className="brand">Northline Job Manager</span>
         <nav>
@@ -16,7 +17,7 @@ export default function App() {
         </nav>
         <span>Sample data</span>
       </header>
-      <main className="container">
+            <main id="main" className="container" tabIndex={-1}>
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/" element={<RequestListPage />} />
@@ -32,6 +33,7 @@ export default function App() {
 function NotFound() {
   return (
     <section>
+      <title>Page not found · Northline Job Manager</title>
       <h1>Page not found</h1>
       <Link to="/">← Back to requests</Link>
     </section>
