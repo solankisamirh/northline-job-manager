@@ -1,6 +1,7 @@
 import type { QuoteRequest } from '../types/quoteRequest'
 import { formatDate } from '../utils/format'
 import StatusBadge from './StatusBadge'
+import { Link } from 'react-router'
 
 type RequestTableProps = {
   requests: QuoteRequest[]
@@ -28,9 +29,11 @@ export default function RequestTable({ requests }: RequestTableProps) {
           {requests.map(r => (
             <tr key={r.id}>
               <td>
-                <strong>{r.customerName}</strong>
-                <div className="muted">{r.address}</div>
-              </td>
+  <strong>
+    <Link to={`/requests/${r.id}`}>{r.customerName}</Link>
+  </strong>
+  <div className="muted">{r.address}</div>
+</td>
               <td>{r.serviceType}</td>
               <td>{r.propertyType}</td>
               <td>{r.season}</td>
