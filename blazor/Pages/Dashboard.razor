@@ -1,0 +1,142 @@
+﻿@page "/dashboard"
+@using System.Globalization
+@inject IQuoteRequestService Api
+
+<PageTitle>Dashboard · Northline Job Manager</PageTitle>
+
+@if (error is not null)
+{
+    <p class="error">Error: @error</p>
+}
+else if (summary is null)
+{
+    <p class="muted">Loading…</p>
+}
+else
+{
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <a href="requests/new" class="button primary">+ New request</a>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total requests</span>
+            <span class="stat-value">@summary.Total</span>
+        </div>
+        @foreach (var status in QuoteOptions.Statuses)
+        {
+            <div class="stat-card" @key="status">
+                <span class="stat-label"><StatusBadge Status="@status" /></span>
+                <span class="stat-value">@CountFor(status)</span>
+            </div>
+        }
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="panel">
+            <h2>Requests by service</h2>
+            <ul class="bar-list">
+                @foreach (var (service, count) in ServiceCounts)
+                {
+                    <li @key="service">
+                        <span>@service</span>
+                        <span class="bar-track" aria-hidden="true">
+                            <span class="bar-fill" style="@($"width: {Percent(count)}%")"></span>
+                        </span>
+                        <span class="bar-count">@count</span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="panel">
+            <h2>New requests to quote</h2>
+            @if (!LatestNew.Any())
+            {
+                <p class="muted">Nothing waiting.</p>
+            }
+            else
+            {
+                <ul class="mini-list">
+                    @foreach (var r in LatestNew)
+                    {
+                        <li @key="r.Id">
+                            <a href="requests/@r.Id">@r.CustomerName</a>
+                            <span class="muted">@r.ServiceType · received @Format.Date(r.CreatedAt)</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="panel">
+            <h2>Scheduled jobs</h2>
+            @if (!NextScheduled.Any())
+            {
+                <p class="muted">No jobs scheduled.</p>
+            }
+            else
+            {
+                <ul class="mini-list">
+                    @foreach (var r in NextScheduled)
+                    {
+                        <li @key="r.Id">
+                            <a href="requests/@r.Id">@r.CustomerName</a>
+                            <span class="muted">@r.ServiceType · @Format.Date(r.ScheduledDate)</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private Summary? summary;
+    private List<QuoteRequest> newRequests = [];
+    private List<QuoteRequest> scheduled = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var summaryTask = Api.GetSummaryAsync();
+            var newTask = Api.GetAllAsync(new QuoteFilters { Status = "New" });
+            var scheduledTask = Api.GetAllAsync(new QuoteFilters { Status = "Scheduled" });
+            await Task.WhenAll(summaryTask, newTask, scheduledTask);
+
+            summary = await summaryTask;
+            newRequests = await newTask;
+            scheduled = await scheduledTask;
+        }
+        catch (ApiException ex)
+        {
+            error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            error = "Could not reach the server. Is the API running?";
+        }
+    }
+
+    // Derived values: worked out from the data each time the page draws, not stored separately
+    private int CountFor(string status) =>
+        summary?.ByStatus.FirstOrDefault(s => s.Status == status)?.Count ?? 0;
+
+    private IEnumerable<(string Service, int Count)> ServiceCounts =>
+        QuoteOptions.ServiceTypes.Select(service =>
+            (service, summary?.ByService.FirstOrDefault(s => s.ServiceType == service)?.Count ?? 0));
+
+    private int MaxServiceCount => Math.Max(1, ServiceCounts.Max(s => s.Count));
+
+    // Always write "60.5", never "60,5": CSS needs a dot, whatever the browser's language
+    private string Percent(int count) =>
+        (count * 100.0 / MaxServiceCount).ToString("0.#", CultureInfo.InvariantCulture);
+
+    private IEnumerable<QuoteRequest> LatestNew => newRequests.Take(5);
+
+    private IEnumerable<QuoteRequest> NextScheduled =>
+        scheduled.OrderBy(r => r.ScheduledDate).Take(5);
+}
