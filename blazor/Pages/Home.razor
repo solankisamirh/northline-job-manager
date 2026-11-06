@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject HttpClient Http
+@inject IQuoteRequestService Api
 
 <PageTitle>Dashboard · Northline Job Manager</PageTitle>
 
@@ -22,25 +22,40 @@ else
             <li>@s.Status: @s.Count</li>
         }
     </ul>
+
+    <h2>New requests</h2>
+    <ul>
+        @foreach (var r in newRequests)
+        {
+            <li>@r.CustomerName – @r.ServiceType</li>
+        }
+    </ul>
 }
 
 @code {
     private Summary? summary;
+    private List<QuoteRequest> newRequests = [];
     private string? error;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            summary = await Http.GetFromJsonAsync<Summary>("api/quoterequests/summary");
+            // Start both calls, then wait for both (like Promise.all)
+            var summaryTask = Api.GetSummaryAsync();
+            var newTask = Api.GetAllAsync(new QuoteFilters { Status = "New" });
+            await Task.WhenAll(summaryTask, newTask);
+
+            summary = await summaryTask;
+            newRequests = await newTask;
         }
-        catch (Exception ex)
+        catch (ApiException ex)
         {
             error = ex.Message;
         }
+        catch (HttpRequestException)
+        {
+            error = "Could not reach the server. Is the API running?";
+        }
     }
-
-    private record Summary(int Total, List<StatusCount> ByStatus, List<ServiceCount> ByService);
-    private record StatusCount(string Status, int Count);
-    private record ServiceCount(string ServiceType, int Count);
 }
