@@ -1,0 +1,41 @@
+@if (Requests.Count == 0)
+{
+    <p class="empty">No requests match these filters.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="request-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Property</th>
+                    <th>Season</th>
+                    <th>Status</th>
+                    <th>Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Requests)
+                {
+                    <tr @key="r.Id">
+                        <td>
+                            <strong>@r.CustomerName</strong>
+                            <div class="muted">@r.Address</div>
+                        </td>
+                        <td>@r.ServiceType</td>
+                        <td>@r.PropertyType</td>
+                        <td>@r.Season</td>
+                        <td><StatusBadge Status="@r.Status" /></td>
+                        <td>@Format.Date(r.CreatedAt)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public List<QuoteRequest> Requests { get; set; } = [];
+}

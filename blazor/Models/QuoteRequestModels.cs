@@ -48,7 +48,7 @@ public record StatusCount(string Status, int Count);
 public record ServiceCount(string ServiceType, int Count);
 
 // Optional filters for the list
-public class QuoteFilters
+public record QuoteFilters
 {
     public string? Search { get; set; }
     public string? Status { get; set; }

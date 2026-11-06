@@ -1,0 +1,17 @@
+<label>
+    @Label
+    <select value="@(Value ?? "")" @onchange="e => ValueChanged.InvokeAsync(e.Value?.ToString())">
+        <option value="">All</option>
+        @foreach (var option in Options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+</label>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string[] Options { get; set; } = [];
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+}

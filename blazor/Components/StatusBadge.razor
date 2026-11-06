@@ -1,0 +1,5 @@
+<span class="status-badge status-@Status.ToLowerInvariant()">@Status</span>
+
+@code {
+    [Parameter, EditorRequired] public string Status { get; set; } = "";
+}

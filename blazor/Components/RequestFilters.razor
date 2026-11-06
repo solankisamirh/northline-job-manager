@@ -1,0 +1,24 @@
+<div class="filters">
+    <label>
+        Search
+        <input type="search" placeholder="Name, address or email"
+               value="@Filters.Search"
+               @oninput="e => Update(Filters with { Search = e.Value?.ToString() })" />
+    </label>
+
+    <FilterSelect Label="Status" Options="QuoteOptions.Statuses" Value="@Filters.Status"
+                  ValueChanged="v => Update(Filters with { Status = v })" />
+    <FilterSelect Label="Service" Options="QuoteOptions.ServiceTypes" Value="@Filters.ServiceType"
+                  ValueChanged="v => Update(Filters with { ServiceType = v })" />
+    <FilterSelect Label="Season" Options="QuoteOptions.Seasons" Value="@Filters.Season"
+                  ValueChanged="v => Update(Filters with { Season = v })" />
+
+    <button type="button" @onclick="() => Update(new QuoteFilters())">Clear</button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public QuoteFilters Filters { get; set; } = new();
+    [Parameter] public EventCallback<QuoteFilters> FiltersChanged { get; set; }
+
+    private Task Update(QuoteFilters next) => FiltersChanged.InvokeAsync(next);
+}

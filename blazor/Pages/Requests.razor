@@ -1,0 +1,76 @@
+@page "/"
+@implements IDisposable
+@inject IQuoteRequestService Api
+
+<PageTitle>Quote requests · Northline Job Manager</PageTitle>
+
+<div class="page-header">
+    <h1>Quote requests</h1>
+    <span class="muted">@(loading ? "Loading…" : $"{requests.Count} shown")</span>
+</div>
+
+<RequestFilters @bind-Filters="filters" @bind-Filters:after="OnFiltersChangedAsync" />
+
+@if (error is not null)
+{
+    <p class="error">Error: @error</p>
+}
+else if (loading && requests.Count == 0)
+{
+    <p class="muted">Loading…</p>
+}
+else
+{
+    <RequestTable Requests="requests" />
+}
+
+@code {
+    private QuoteFilters filters = new();
+    private List<QuoteRequest> requests = [];
+    private bool loading = true;
+    private string? error;
+    private CancellationTokenSource? cts;
+
+    protected override Task OnInitializedAsync() => LoadAsync(delayMs: 0);
+
+    // Runs after the filters change: wait 300 ms after the last keystroke (debounce)
+    private Task OnFiltersChangedAsync() => LoadAsync(delayMs: 300);
+
+    private async Task LoadAsync(int delayMs)
+    {
+        // Cancel the previous search, so an older answer can't overwrite a newer one
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        var token = cts.Token;
+
+        try
+        {
+            if (delayMs > 0) await Task.Delay(delayMs, token);
+            loading = true;
+            error = null;
+            requests = await Api.GetAllAsync(filters, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return; // a newer search replaced this one
+        }
+        catch (ApiException ex)
+        {
+            error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            error = "Could not reach the server. Is the API running?";
+        }
+
+        loading = false;
+    }
+
+    // Runs when you leave the page: stop any search still waiting
+    public void Dispose()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
+    }
+}
