@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useParams, useLocation } from 'react-router'
 import { ApiError, getQuoteRequest } from '../api/quoteRequests'
 import StatusActions from '../components/StatusActions'
 import StatusBadge from '../components/StatusBadge'
@@ -9,6 +9,9 @@ import { formatDate } from '../utils/format'
 export default function RequestDetailsPage() {
   const { id } = useParams()
   const requestId = Number(id)
+
+    const location = useLocation()
+  const createdMessage = (location.state as { message?: string } | null)?.message
 
   const [request, setRequest] = useState<QuoteRequest | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -51,6 +54,8 @@ export default function RequestDetailsPage() {
         <h1>{request.customerName}</h1>
         <StatusBadge status={request.status} />
       </div>
+
+            {createdMessage && !saved && <p className="success" role="status">{createdMessage}</p>}
 
       <div className="details-grid">
         <div className="card">

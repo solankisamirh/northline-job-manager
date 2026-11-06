@@ -1,6 +1,7 @@
 import { Link, NavLink, Route, Routes } from 'react-router'
 import RequestDetailsPage from './pages/RequestDetailsPage'
 import RequestListPage from './pages/RequestListPage'
+import NewRequestPage from './pages/NewRequestPage'
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
         <span className="brand">Northline Job Manager</span>
         <nav>
           <NavLink to="/" end>Requests</NavLink>
+          <NavLink to="/requests/new">New request</NavLink>
         </nav>
         <span>Sample data</span>
       </header>
@@ -17,6 +19,7 @@ export default function App() {
           <Route path="/" element={<RequestListPage />} />
           <Route path="/requests/:id" element={<RequestDetailsPage />} />
           <Route path="*" element={<NotFound />} />
+                    <Route path="/requests/new" element={<NewRequestPage />} />
         </Routes>
       </main>
     </div>
