@@ -3,9 +3,9 @@
 An internal tool for a fictional landscaping and snow-removal company to track customer quote requests.
 Personal portfolio project. **All business names, customers and data are sample data.**
 
-One ASP.NET Core Web API serves three frontends: **React (done)**, Blazor and Angular (in progress).
+One ASP.NET Core Web API serves three frontends: **React (done)**, **Blazor (done)** and Angular (in progress).
 
-## Screenshots
+## Screenshots: React
 
 | Dashboard | Requests |
 |---|---|
@@ -15,7 +15,19 @@ One ASP.NET Core Web API serves three frontends: **React (done)**, Blazor and An
 |---|---|
 | ![Request details with status update](docs/screenshots/details.png) | ![New request form with validation](docs/screenshots/new-request.png) |
 
+## Screenshots: Blazor
+
+| Dashboard | Requests |
+|---|---|
+| ![Blazor dashboard](docs/screenshots/blazor-dashboard.png) | ![Blazor requests list with filters](docs/screenshots/blazor-requests.png) |
+
+| Request details | New request |
+|---|---|
+| ![Blazor request details with status update](docs/screenshots/blazor-details.png) | ![Blazor new request form with validation](docs/screenshots/blazor-new-request.png) |
+
 ## Features
+
+Both frontends have the same features:
 
 - Dashboard with status counts, requests by service, new requests to quote and scheduled jobs
 - Request list with search and filters (status, service, season), kept in the URL
@@ -29,7 +41,8 @@ One ASP.NET Core Web API serves three frontends: **React (done)**, Blazor and An
 |---|---|
 | Database | Azure SQL Database, T-SQL (CHECK constraints, defaults, index) |
 | API | ASP.NET Core Web API (.NET 10), Entity Framework Core, Swagger/OpenAPI |
-| Frontend | React, TypeScript, Vite, React Router, ESLint |
+| Frontend (React) | React, TypeScript, Vite, React Router, ESLint |
+| Frontend (Blazor) | Blazor WebAssembly (.NET 10), C#, EditForm with data-annotation validation |
 
 ## Project structure
 
@@ -37,8 +50,9 @@ One ASP.NET Core Web API serves three frontends: **React (done)**, Blazor and An
 api/        ASP.NET Core Web API
 database/   SQL script: table and sample data
 react/      React + TypeScript frontend
-blazor/     coming soon
+blazor/     Blazor WebAssembly frontend (C#)
 angular/    coming soon
+docs/       Screenshots
 ```
 
 ## API endpoints
@@ -53,7 +67,7 @@ angular/    coming soon
 
 ## Run it locally
 
-You need the .NET 10 SDK, Node.js (LTS) and a SQL Server or Azure SQL database.
+You need the .NET 10 SDK, Node.js (LTS, for React) and a SQL Server or Azure SQL database.
 
 1. **Database:** run `database/01_create_quote_requests.sql`.
 2. **API:**
@@ -70,11 +84,32 @@ You need the .NET 10 SDK, Node.js (LTS) and a SQL Server or Azure SQL database.
    npm run dev
    ```
    Open `http://localhost:5173`. The API address is set in `react/.env.development`.
+4. **Blazor:**
+   ```bash
+   cd blazor
+   dotnet watch
+   ```
+   Open the address shown in the terminal. The API address is set in `blazor/wwwroot/appsettings.Development.json`, and the Blazor address must be in the API's CORS list (`api/appsettings.Development.json`).
 
 ## Design decisions
 
-- **Validation in three layers:** React for instant feedback, API DTO validation for clear 400 messages, SQL CHECK constraints as the final safety net.
+- **Validation in three layers:** the frontend for instant feedback, API DTO validation for clear 400 messages, SQL CHECK constraints as the final safety net.
 - **Times stored in UTC** and sent with a `Z`, so each browser shows its own local time.
-- **Typed API client** in one place (`react/src/api`), with readable error messages for any error shape.
+- **Typed API client in one place** (`react/src/api`, `blazor/Services`), with readable error messages for any error shape.
+- **Blazor service behind an interface** (`IQuoteRequestService`), so pages depend on what it does, not how, and it can be replaced with a fake in tests.
+- **Blazor WebAssembly (standalone)** rather than Blazor Server, so it runs in the browser and calls the API like the React app, which makes the two directly comparable.
 - **CSS-only bar chart** instead of a chart library, since a few bars don't need the extra download.
-- **Secrets** kept in user-secrets, never in the repo.
+- **Secrets** kept in user-secrets, never in the repo. Frontend settings files hold only the API address, because anyone can read them in the browser.
+
+## React vs Blazor
+
+Both frontends have the same pages and call the same API, so they can be compared directly.
+
+| | React | Blazor WebAssembly |
+|---|---|---|
+| Language | TypeScript + JSX | C# + Razor |
+| Validation | Own validation function, mirrored from the API | Same data-annotation attributes as the API (`EditForm`) |
+| State | `useState` + setter | Plain C# fields |
+| Routing | React Router library | Built in (`@page`) |
+| First load | Small download | Larger (downloads .NET once, then cached) |
+| Best fit | Teams working in JavaScript/TypeScript | .NET teams sharing C# code between API and UI |
