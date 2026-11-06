@@ -195,3 +195,10 @@ a.stat-card:hover { border-color: var(--green); }
   .app-header { padding: 10px 16px; }
   h1 { font-size: 1.35rem; }
 }
+
+   select {
+     -webkit-appearance: none;
+     appearance: none;
+     padding-right: 32px;
+     background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f6b63' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;
+   }
