@@ -176,3 +176,34 @@ code {
 
 .success { color: #2f6b3f; font-weight: 600; margin-top: 8px; }
 ul.error { padding-left: 18px; }
+
+.form { display: grid; gap: 16px; max-width: 720px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
+.form-field label { font-size: 0.85rem; font-weight: 600; }
+.form-field input, .form-field select, .form-field textarea {
+    width: 100%;
+    font: inherit;
+    min-height: 40px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+}
+.form-field textarea { resize: vertical; }
+
+.form-field .invalid { border-color: #a12622; outline: none; }
+.form-field .valid.modified { border-color: var(--border); outline: none; }
+.validation-message { color: #a12622; font-size: 0.85rem; }
+.required { color: #a12622; }
+.hint { margin: 0 0 -8px; }
+
+.form-message {
+    background: #fdecea;
+    color: #a12622;
+    border: 1px solid #f3c2bd;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 0;
+}
+.form-actions { display: flex; gap: 12px; align-items: center; }

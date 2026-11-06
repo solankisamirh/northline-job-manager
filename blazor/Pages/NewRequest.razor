@@ -1,0 +1,172 @@
+@page "/requests/new"
+@implements IDisposable
+@inject IQuoteRequestService Api
+@inject NavigationManager Nav
+
+<PageTitle>New request · Northline Job Manager</PageTitle>
+
+<a href="" class="back-link">← Back to requests</a>
+<h1>New quote request</h1>
+
+<EditForm EditContext="editContext" OnValidSubmit="SaveAsync" OnInvalidSubmit="ShowFixMessage" class="panel form">
+    <DataAnnotationsValidator />
+
+    @if (formMessage is not null)
+    {
+        <p class="form-message" role="alert">@formMessage</p>
+    }
+
+    <div class="form-field">
+        <label for="customerName">Customer name <span class="required" aria-hidden="true">*</span></label>
+        <InputText id="customerName" @bind-Value="model.CustomerName" autocomplete="name"
+                   aria-describedby="customerName-error" />
+        <ValidationMessage For="() => model.CustomerName" id="customerName-error" />
+    </div>
+
+    <p class="muted hint">Enter at least an email or a phone number.</p>
+    <div class="form-row">
+        <div class="form-field">
+            <label for="email">Email</label>
+            <InputText id="email" type="email" @bind-Value="model.Email" autocomplete="email"
+                       aria-describedby="email-error" />
+            <ValidationMessage For="() => model.Email" id="email-error" />
+        </div>
+        <div class="form-field">
+            <label for="phone">Phone</label>
+            <InputText id="phone" type="tel" @bind-Value="model.Phone" autocomplete="tel"
+                       aria-describedby="phone-error" />
+            <ValidationMessage For="() => model.Phone" id="phone-error" />
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label for="address">Property address <span class="required" aria-hidden="true">*</span></label>
+        <InputText id="address" @bind-Value="model.Address" autocomplete="street-address"
+                   aria-describedby="address-error" />
+        <ValidationMessage For="() => model.Address" id="address-error" />
+    </div>
+
+    <div class="form-row">
+        <div class="form-field">
+            <label for="serviceType">Service <span class="required" aria-hidden="true">*</span></label>
+            <InputSelect id="serviceType" @bind-Value="model.ServiceType" aria-describedby="serviceType-error">
+                <option value="">Choose…</option>
+                @foreach (var s in QuoteOptions.ServiceTypes)
+                {
+                    <option value="@s">@s</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => model.ServiceType" id="serviceType-error" />
+        </div>
+        <div class="form-field">
+            <label for="propertyType">Property type <span class="required" aria-hidden="true">*</span></label>
+            <InputSelect id="propertyType" @bind-Value="model.PropertyType" aria-describedby="propertyType-error">
+                <option value="">Choose…</option>
+                @foreach (var p in QuoteOptions.PropertyTypes)
+                {
+                    <option value="@p">@p</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => model.PropertyType" id="propertyType-error" />
+        </div>
+        <div class="form-field">
+            <label for="season">Season <span class="required" aria-hidden="true">*</span></label>
+            <InputSelect id="season" @bind-Value="model.Season" aria-describedby="season-error">
+                <option value="">Choose…</option>
+                @foreach (var s in QuoteOptions.Seasons)
+                {
+                    <option value="@s">@s</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => model.Season" id="season-error" />
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label for="notes">Notes</label>
+        <InputTextArea id="notes" @bind-Value="model.Notes" rows="4" aria-describedby="notes-error" />
+        <ValidationMessage For="() => model.Notes" id="notes-error" />
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="primary" disabled="@saving">
+            @(saving ? "Saving…" : "Create request")
+        </button>
+        <a href="">Cancel</a>
+    </div>
+</EditForm>
+
+@code {
+    private QuoteRequestForm model = new();
+    private EditContext editContext = default!;
+    private ValidationMessageStore serverErrors = default!;
+    private string? formMessage;
+    private bool saving;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(model);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        // A message from the server disappears once the user edits that field
+        serverErrors.Clear(e.FieldIdentifier);
+
+        // Typing a phone re-checks the "email or phone" rule on Email
+        if (e.FieldIdentifier.FieldName == nameof(QuoteRequestForm.Phone))
+            editContext.NotifyFieldChanged(editContext.Field(nameof(QuoteRequestForm.Email)));
+    }
+
+    private void ShowFixMessage() => formMessage = "Please fix the highlighted fields.";
+
+    private async Task SaveAsync()
+    {
+        formMessage = null;
+        serverErrors.Clear();
+        saving = true;
+        try
+        {
+            var created = await Api.CreateAsync(model.ToRequest());
+            Nav.NavigateTo($"requests/{created.Id}?created=true");
+        }
+        catch (ApiException ex) when (ex.Errors.Count > 0)
+        {
+            // Put the API's messages under the matching fields
+            var otherMessages = new List<string>();
+            foreach (var (key, messages) in ex.Errors)
+            {
+                var field = ToFieldName(key);
+                if (field is not null) serverErrors.Add(editContext.Field(field), messages);
+                else otherMessages.AddRange(messages);
+            }
+            editContext.NotifyValidationStateChanged();
+            formMessage = otherMessages.Count > 0 ? string.Join(" ", otherMessages) : "Please fix the highlighted fields.";
+        }
+        catch (ApiException ex)
+        {
+            formMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            formMessage = "Could not reach the server. Please try again.";
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+
+    // API error keys look like "Email" or "$.email" → our property names look like "Email"
+    private static string? ToFieldName(string key)
+    {
+        var clean = key.StartsWith("$.") ? key[2..] : key;
+        if (clean.Length == 0) return null;
+        var name = char.ToUpperInvariant(clean[0]) + clean[1..];
+        return typeof(QuoteRequestForm).GetProperty(name) is not null ? name : null;
+    }
+
+    public void Dispose() => editContext.OnFieldChanged -= HandleFieldChanged;
+}

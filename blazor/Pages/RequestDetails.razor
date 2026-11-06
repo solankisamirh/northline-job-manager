@@ -26,6 +26,11 @@ else
         <StatusBadge Status="@request.Status" />
     </div>
 
+    @if (Created && !saved)
+{
+    <p class="success" role="status">Request created.</p>
+}
+
     <div class="details-grid">
         <div class="panel">
             <h2>Request details</h2>
@@ -55,6 +60,8 @@ else
 
 @code {
     [Parameter] public int Id { get; set; }
+
+    [SupplyParameterFromQuery] public bool Created { get; set; }
 
     private QuoteRequest? request;
     private string? error;
