@@ -1,0 +1,85 @@
+@inject IQuoteRequestService Api
+
+<div class="panel">
+    <h2>Update status</h2>
+
+    <div class="status-buttons" role="group" aria-label="Status">
+        @foreach (var s in QuoteOptions.Statuses)
+        {
+            <button type="button"
+                    class="@(s == status ? "selected" : null)"
+                    aria-pressed="@(s == status ? "true" : "false")"
+                    @onclick="() => status = s">
+                @s
+            </button>
+        }
+    </div>
+
+    @if (NeedsDate)
+    {
+        <label class="field">
+            Scheduled date
+            <input type="date" @bind="scheduledDate" />
+        </label>
+    }
+
+    @if (messages.Count > 0)
+    {
+        <ul class="error" role="alert">
+            @foreach (var m in messages)
+            {
+                <li>@m</li>
+            }
+        </ul>
+    }
+
+    <button type="button" class="primary" @onclick="SaveAsync" disabled="@(saving || Unchanged)">
+        @(saving ? "Saving…" : "Save status")
+    </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public QuoteRequest Request { get; set; } = default!;
+    [Parameter] public EventCallback<QuoteRequest> OnUpdated { get; set; }
+
+    private string status = "";
+    private DateOnly? scheduledDate;
+    private bool saving;
+    private List<string> messages = [];
+
+    private bool NeedsDate => QuoteOptions.NeedsDate.Contains(status);
+    private bool Unchanged => status == Request.Status && scheduledDate == Request.ScheduledDate;
+
+    // Start with the request's current values
+    protected override void OnInitialized()
+    {
+        status = Request.Status;
+        scheduledDate = Request.ScheduledDate;
+    }
+
+    private async Task SaveAsync()
+    {
+        saving = true;
+        messages = [];
+        try
+        {
+            var updated = await Api.UpdateStatusAsync(
+                Request.Id,
+                new UpdateStatusRequest(status, NeedsDate ? scheduledDate : null));
+            await OnUpdated.InvokeAsync(updated);
+        }
+        catch (ApiException ex)
+        {
+            // Validation messages from the C# API (400), or the general message
+            messages = ex.Messages.ToList();
+        }
+        catch (HttpRequestException)
+        {
+            messages = ["Could not reach the server. Please try again."];
+        }
+        finally
+        {
+            saving = false;
+        }
+    }
+}

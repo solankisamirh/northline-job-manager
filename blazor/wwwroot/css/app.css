@@ -142,3 +142,37 @@ code {
 .request-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--muted); background: #fafbf9; }
 
 .empty { padding: 24px; text-align: center; background: #fff; border: 1px dashed var(--border); }
+
+.content a { color: var(--green); }
+.back-link { display: inline-block; margin-bottom: 12px; }
+
+.details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 760px) {
+    .details-grid { grid-template-columns: 1fr; }
+}
+
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.panel h2 { font-size: 1.05rem; margin: 0 0 12px; }
+
+.details { display: grid; grid-template-columns: 140px 1fr; gap: 8px 12px; margin: 0; }
+.details dt { color: var(--muted); font-weight: 600; }
+.details dd { margin: 0; }
+
+.status-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.panel button {
+    font: inherit;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #fff;
+}
+.status-buttons button.selected { background: var(--green); border-color: var(--green); color: #fff; }
+.panel button.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+.panel button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; }
+.field input { font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; }
+
+.success { color: #2f6b3f; font-weight: 600; margin-top: 8px; }
+ul.error { padding-left: 18px; }

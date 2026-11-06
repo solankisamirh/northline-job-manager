@@ -21,7 +21,7 @@ else
                 {
                     <tr @key="r.Id">
                         <td>
-                            <strong>@r.CustomerName</strong>
+                            <strong><a href="requests/@r.Id">@r.CustomerName</a></strong>
                             <div class="muted">@r.Address</div>
                         </td>
                         <td>@r.ServiceType</td>

@@ -1,0 +1,95 @@
+@page "/requests/{Id:int}"
+@inject IQuoteRequestService Api
+
+@if (notFound)
+{
+    <PageTitle>Request not found · Northline Job Manager</PageTitle>
+    <h1>Request not found</h1>
+    <a href="">← Back to requests</a>
+}
+else if (error is not null)
+{
+    <p class="error">Error: @error</p>
+}
+else if (request is null)
+{
+    <p class="muted">Loading…</p>
+}
+else
+{
+    <PageTitle>@request.CustomerName · Northline Job Manager</PageTitle>
+
+    <a href="" class="back-link">← Back to requests</a>
+
+    <div class="page-header">
+        <h1>@request.CustomerName</h1>
+        <StatusBadge Status="@request.Status" />
+    </div>
+
+    <div class="details-grid">
+        <div class="panel">
+            <h2>Request details</h2>
+            <dl class="details">
+                <dt>Address</dt><dd>@request.Address</dd>
+                <dt>Email</dt><dd>@(request.Email ?? "—")</dd>
+                <dt>Phone</dt><dd>@(request.Phone ?? "—")</dd>
+                <dt>Service</dt><dd>@request.ServiceType</dd>
+                <dt>Property</dt><dd>@request.PropertyType</dd>
+                <dt>Season</dt><dd>@request.Season</dd>
+                <dt>Scheduled</dt><dd>@Format.Date(request.ScheduledDate)</dd>
+                <dt>Received</dt><dd>@Format.Date(request.CreatedAt)</dd>
+                <dt>Last updated</dt><dd>@Format.Date(request.UpdatedAt)</dd>
+                <dt>Notes</dt><dd>@(request.Notes ?? "—")</dd>
+            </dl>
+        </div>
+
+        <div>
+            <StatusActions @key="request.Id" Request="request" OnUpdated="HandleUpdated" />
+            @if (saved)
+            {
+                <p class="success" role="status">Status saved.</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private QuoteRequest? request;
+    private string? error;
+    private bool notFound;
+    private bool saved;
+
+    // Runs when the page opens AND whenever the Id in the URL changes
+    protected override async Task OnParametersSetAsync()
+    {
+        request = null;
+        error = null;
+        notFound = false;
+        saved = false;
+
+        try
+        {
+            request = await Api.GetByIdAsync(Id);
+        }
+        catch (ApiException ex) when (ex.StatusCode == 404)
+        {
+            notFound = true;
+        }
+        catch (ApiException ex)
+        {
+            error = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            error = "Could not reach the server. Is the API running?";
+        }
+    }
+
+    private void HandleUpdated(QuoteRequest updated)
+    {
+        request = updated;
+        saved = true;
+    }
+}
