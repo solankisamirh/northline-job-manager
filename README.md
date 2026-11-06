@@ -9,11 +9,11 @@ One ASP.NET Core Web API serves three frontends: **React (done)**, **Blazor (don
 
 | Dashboard | Requests |
 |---|---|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Requests list with filters](docs/screenshots/requests.png) |
+| ![Dashboard](docs/screenshots/react-dashboard.png) | ![Requests list with filters](docs/screenshots/react-requests.png) |
 
 | Request details | New request |
 |---|---|
-| ![Request details with status update](docs/screenshots/details.png) | ![New request form with validation](docs/screenshots/new-request.png) |
+| ![Request details with status update](docs/screenshots/react-details.png) | ![New request form with validation](docs/screenshots/react-new-request.png) |
 
 ## Screenshots: Blazor
 
