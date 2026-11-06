@@ -19,17 +19,17 @@ else
         <a href="requests/new" class="button primary">+ New request</a>
     </div>
 
-    <div class="stat-grid">
-        <div class="stat-card">
+        <div class="stat-grid">
+        <a href="" class="stat-card">
             <span class="stat-label">Total requests</span>
             <span class="stat-value">@summary.Total</span>
-        </div>
+        </a>
         @foreach (var status in QuoteOptions.Statuses)
         {
-            <div class="stat-card" @key="status">
+            <a href="@($"?status={status}")" class="stat-card" @key="status">
                 <span class="stat-label"><StatusBadge Status="@status" /></span>
                 <span class="stat-value">@CountFor(status)</span>
-            </div>
+            </a>
         }
     </div>
 
@@ -40,7 +40,7 @@ else
                 @foreach (var (service, count) in ServiceCounts)
                 {
                     <li @key="service">
-                        <span>@service</span>
+                        <a href="@($"?serviceType={Uri.EscapeDataString(service)}")">@service</a>
                         <span class="bar-track" aria-hidden="true">
                             <span class="bar-fill" style="@($"width: {Percent(count)}%")"></span>
                         </span>

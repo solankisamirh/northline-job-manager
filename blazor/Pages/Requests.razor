@@ -1,6 +1,7 @@
 @page "/"
 @implements IDisposable
 @inject IQuoteRequestService Api
+@inject NavigationManager Nav
 
 <PageTitle>Quote requests · Northline Job Manager</PageTitle>
 
@@ -9,7 +10,7 @@
     <span class="muted">@(loading ? "Loading…" : $"{requests.Count} shown")</span>
 </div>
 
-<RequestFilters @bind-Filters="filters" @bind-Filters:after="OnFiltersChangedAsync" />
+<RequestFilters @bind-Filters="filters" @bind-Filters:after="UpdateUrl" />
 
 @if (error is not null)
 {
@@ -25,16 +26,42 @@ else
 }
 
 @code {
+    // Filters live in the URL, e.g. /?status=New&search=sample
+    [SupplyParameterFromQuery(Name = "search")] public string? Search { get; set; }
+    [SupplyParameterFromQuery(Name = "status")] public string? Status { get; set; }
+    [SupplyParameterFromQuery(Name = "serviceType")] public string? ServiceType { get; set; }
+    [SupplyParameterFromQuery(Name = "season")] public string? Season { get; set; }
+
     private QuoteFilters filters = new();
     private List<QuoteRequest> requests = [];
     private bool loading = true;
     private string? error;
     private CancellationTokenSource? cts;
+    private bool firstLoad = true;
 
-    protected override Task OnInitializedAsync() => LoadAsync(delayMs: 0);
+    // Runs when the page opens AND every time the query string changes
+    protected override Task OnParametersSetAsync()
+    {
+        filters = new QuoteFilters { Search = Search, Status = Status, ServiceType = ServiceType, Season = Season };
+        var delay = firstLoad ? 0 : 300; // load at once the first time, debounce after that
+        firstLoad = false;
+        return LoadAsync(delay);
+    }
 
-    // Runs after the filters change: wait 300 ms after the last keystroke (debounce)
-    private Task OnFiltersChangedAsync() => LoadAsync(delayMs: 300);
+    // The filters changed on screen → write them into the URL, without adding a Back-button step
+    private void UpdateUrl()
+    {
+        var url = Nav.GetUriWithQueryParameters(new Dictionary<string, object?>
+        {
+            ["search"] = NullIfEmpty(filters.Search),
+            ["status"] = NullIfEmpty(filters.Status),
+            ["serviceType"] = NullIfEmpty(filters.ServiceType),
+            ["season"] = NullIfEmpty(filters.Season),
+        });
+        Nav.NavigateTo(url, replace: true);
+    }
+
+    private static string? NullIfEmpty(string? value) => string.IsNullOrEmpty(value) ? null : value;
 
     private async Task LoadAsync(int delayMs)
     {
@@ -67,7 +94,6 @@ else
         loading = false;
     }
 
-    // Runs when you leave the page: stop any search still waiting
     public void Dispose()
     {
         cts?.Cancel();

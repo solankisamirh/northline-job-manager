@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+
+<button type="button" class="skip-link" @onclick="SkipToMain">Skip to main content</button>
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,11 +9,17 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <span class="muted">Sample data</span>
         </div>
 
-        <article class="content px-4">
+        <article class="content px-4" tabindex="-1" @ref="mainContent">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+    private ElementReference mainContent;
+
+    private async Task SkipToMain() => await mainContent.FocusAsync();
+}
