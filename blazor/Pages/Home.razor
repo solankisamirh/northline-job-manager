@@ -1,0 +1,46 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Dashboard · Northline Job Manager</PageTitle>
+
+<h1>Northline Job Manager</h1>
+
+@if (error is not null)
+{
+    <p class="text-danger">Error: @error</p>
+}
+else if (summary is null)
+{
+    <p>Loading…</p>
+}
+else
+{
+    <p>Total requests: @summary.Total</p>
+    <ul>
+        @foreach (var s in summary.ByStatus)
+        {
+            <li>@s.Status: @s.Count</li>
+        }
+    </ul>
+}
+
+@code {
+    private Summary? summary;
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            summary = await Http.GetFromJsonAsync<Summary>("api/quoterequests/summary");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    private record Summary(int Total, List<StatusCount> ByStatus, List<ServiceCount> ByService);
+    private record StatusCount(string Status, int Count);
+    private record ServiceCount(string ServiceType, int Count);
+}

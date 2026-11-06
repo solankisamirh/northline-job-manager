@@ -2,4 +2,7 @@
   <Folder Name="/api/">
     <Project Path="api/Northline.Api.csproj" />
   </Folder>
+  <Folder Name="/blazor/">
+    <Project Path="blazor/Northline.Blazor.csproj" />
+  </Folder>
 </Solution>
