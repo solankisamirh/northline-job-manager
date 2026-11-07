@@ -1,0 +1,19 @@
+<main>
+  <h1>Northline Job Manager</h1>
+
+  @if (error()){
+  <p class="error">Error: {{ error()}}</p>
+  } @else {
+  @if (summary(); as s) {
+  <p>Total requests: {{ s.total}}</p>
+  <ul>
+    @for (item of s.byStatus; track item.status) {
+    <li>{{ item.status}}: {{ item.count}}</li>
+    }
+  </ul>
+  } @else {
+  <p>Loading...</p>
+  }
+  }
+
+</main>
