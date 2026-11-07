@@ -1,4 +1,5 @@
-﻿@page "/dashboard"
+﻿@page "/"
+@page "/dashboard"
 @using System.Globalization
 @inject IQuoteRequestService Api
 
@@ -20,13 +21,13 @@ else
     </div>
 
         <div class="stat-grid">
-        <a href="" class="stat-card">
+        <a href="requests" class="stat-card">
             <span class="stat-label">Total requests</span>
             <span class="stat-value">@summary.Total</span>
         </a>
         @foreach (var status in QuoteOptions.Statuses)
         {
-            <a href="@($"?status={status}")" class="stat-card" @key="status">
+            <a href="@($"requests?status={status}")" class="stat-card" @key="status">
                 <span class="stat-label"><StatusBadge Status="@status" /></span>
                 <span class="stat-value">@CountFor(status)</span>
             </a>
@@ -40,7 +41,7 @@ else
                 @foreach (var (service, count) in ServiceCounts)
                 {
                     <li @key="service">
-                        <a href="@($"?serviceType={Uri.EscapeDataString(service)}")">@service</a>
+                        <a href="@($"requests?serviceType={Uri.EscapeDataString(service)}")">@service</a>
                         <span class="bar-track" aria-hidden="true">
                             <span class="bar-fill" style="@($"width: {Percent(count)}%")"></span>
                         </span>
