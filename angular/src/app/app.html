@@ -11,6 +11,12 @@
     <li>{{ item.status}}: {{ item.count}}</li>
     }
   </ul>
+  <h2>New Requests</h2>
+  <ul>
+    @for (r of newRequests(); track r.id) {
+    <li>{{ r.customerName }} - {{ r.serviceType }}</li>
+    }
+  </ul>
   } @else {
   <p>Loading...</p>
   }
