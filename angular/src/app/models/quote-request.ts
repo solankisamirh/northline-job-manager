@@ -21,7 +21,7 @@ export interface QuoteRequest {
   serviceType: ServiceType;
   propertyType: PropertyType;
   season: Season;
-  status: QuoteStatus;
+  status?: QuoteStatus | '';
   scheduledDate: string | null; // "2026-11-15"
   notes: string | null;
   createdAt: string;            // UTC, ends in "Z"
