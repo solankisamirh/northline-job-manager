@@ -2,10 +2,11 @@ import { Component, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { QuoteRequest } from '../models/quote-request';
 import { StatusBadge } from './status-badge';
+import { RouterLink } from '@angular/router'; 
 
 @Component({
   selector: 'app-request-table',
-  imports: [StatusBadge, DatePipe],
+  imports: [StatusBadge, DatePipe, RouterLink],
   template: `
     @if (requests().length === 0) {
       <p class="empty">No requests match these filters.</p>
@@ -26,7 +27,7 @@ import { StatusBadge } from './status-badge';
             @for (r of requests(); track r.id) {
               <tr>
                 <td>
-                  <strong>{{ r.customerName }}</strong>
+                  <strong><a [routerLink]="['/requests', r.id]">{{ r.customerName }}</a></strong>
                   <div class="muted">{{ r.address }}</div>
                 </td>
                 <td>{{ r.serviceType }}</td>

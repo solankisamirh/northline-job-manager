@@ -53,3 +53,40 @@ select {
 .request-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--muted); background: #fafbf9; }
 
 .empty { padding: 24px; text-align: center; background: #fff; border: 1px dashed var(--border); }/* You can add global styles to this file, and also import other style files */
+
+a { color: var(--green); }
+
+.app-header { flex-wrap: wrap; gap: 8px 16px; }
+.app-header nav a {
+  color: #d7e6da;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.app-header nav a.active { background: rgba(255, 255, 255, 0.15); color: #fff; }
+
+.back-link { display: inline-block; margin-bottom: 12px; }
+
+.details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 760px) {
+  .details-grid { grid-template-columns: 1fr; }
+}
+
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.panel h2 { font-size: 1.05rem; margin: 0 0 12px; }
+
+.details { display: grid; grid-template-columns: 140px 1fr; gap: 8px 12px; margin: 0; }
+.details dt { color: var(--muted); font-weight: 600; }
+.details dd { margin: 0; }
+
+.status-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.status-buttons button.selected { background: var(--green); border-color: var(--green); color: #fff; }
+
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; }
+
+button.primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.success { color: #2f6b3f; font-weight: 600; }
+ul.error { padding-left: 18px; }
