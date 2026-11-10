@@ -1,1 +1,55 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: #1f2a24;
+  background: #f6f7f5;
+  --green: #2f6b3f;
+  --border: #dde3dc;
+  --muted: #5f6b63;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--green);
+  color: #fff;
+}
+.brand { font-weight: 700; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+.page-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+h1 { font-size: 1.6rem; margin: 0 0 16px; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.error { color: #a12622; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 16px; }
+.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 600; }
+.filters input { min-width: 240px; }
+input, select, button {
+  font: inherit;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+button { cursor: pointer; }
+input[type="search"], select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+select {
+  padding-right: 32px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235f6b63' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;
+}
+
+.table-wrap { overflow-x: auto; }
+.request-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); }
+.request-table th, .request-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.request-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--muted); background: #fafbf9; }
+
+.empty { padding: 24px; text-align: center; background: #fff; border: 1px dashed var(--border); }/* You can add global styles to this file, and also import other style files */

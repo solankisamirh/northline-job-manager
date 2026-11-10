@@ -1,25 +1,9 @@
-<main>
-  <h1>Northline Job Manager</h1>
-
-  @if (error()){
-  <p class="error">Error: {{ error()}}</p>
-  } @else {
-  @if (summary(); as s) {
-  <p>Total requests: {{ s.total}}</p>
-  <ul>
-    @for (item of s.byStatus; track item.status) {
-    <li>{{ item.status}}: {{ item.count}}</li>
-    }
-  </ul>
-  <h2>New Requests</h2>
-  <ul>
-    @for (r of newRequests(); track r.id) {
-    <li>{{ r.customerName }} - {{ r.serviceType }}</li>
-    }
-  </ul>
-  } @else {
-  <p>Loading...</p>
-  }
-  }
-
-</main>
+<div class="app">
+  <header class="app-header">
+    <span class="brand">Northline Job Manager</span>
+    <span>Sample data</span>
+  </header>
+  <main class="container">
+    <app-request-list-page />
+  </main>
+</div>

@@ -1,33 +1,11 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ApiError, QuoteRequestService } from './services/quote-request.service';
-import { QuoteRequest, Summary } from './models/quote-request';
-import { forkJoin } from 'rxjs';
+import { RequestListPage } from './pages/request-list-page';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [RouterOutlet, RequestListPage],
   templateUrl: './app.html',
+  styleUrl: './app.css',
 })
-export class App implements OnInit {
-  private readonly api = inject(QuoteRequestService);
-
-  protected readonly summary = signal<Summary | null>(null);
-  protected readonly newRequests = signal<QuoteRequest[]>([]);
-  protected readonly error = signal<string | null>(null);
-
-  ngOnInit(): void {
-    // Run both calls at the same time and wait for both (like Promise.all / Task.WhenAll)
-    forkJoin({
-      summary: this.api.getSummary(),
-      newRequests: this.api.getAll({ status: 'New' }),
-    }).subscribe({
-      next: ({ summary, newRequests }) => {
-        this.summary.set(summary);
-        this.newRequests.set(newRequests);
-      },
-      error: (err: ApiError) => this.error.set(err.message),
-    });
-  }
-}
+export class App {}
