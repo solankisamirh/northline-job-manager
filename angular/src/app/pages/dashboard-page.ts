@@ -21,15 +21,15 @@ import { StatusBadge } from '../components/status-badge';
         </div>
 
         <div class="stat-grid">
-          <div class="stat-card">
+          <a routerLink="/requests" class="stat-card">
             <span class="stat-label">Total requests</span>
             <span class="stat-value">{{ s.total }}</span>
-          </div>
+          </a>
           @for (card of statusCards(); track card.status) {
-            <div class="stat-card">
+            <a routerLink="/requests" [queryParams]="{ status: card.status }" class="stat-card">
               <span class="stat-label"><app-status-badge [status]="card.status" /></span>
               <span class="stat-value">{{ card.count }}</span>
-            </div>
+            </a>
           }
         </div>
 
@@ -39,7 +39,7 @@ import { StatusBadge } from '../components/status-badge';
             <ul class="bar-list">
               @for (bar of serviceBars(); track bar.service) {
                 <li>
-                  <span>{{ bar.service }}</span>
+                  <a routerLink="/requests" [queryParams]="{ serviceType: bar.service }">{{ bar.service }}</a>
                   <span class="bar-track" aria-hidden="true">
                     <span class="bar-fill" [style.width.%]="bar.percent"></span>
                   </span>
