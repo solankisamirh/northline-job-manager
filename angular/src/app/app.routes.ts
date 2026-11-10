@@ -3,7 +3,11 @@ import { RequestListPage } from './pages/request-list-page';
 
 export const routes: Routes = [
 // Home: the dashboard comes in step 6; until then, go to the list 
-{ path: '', redirectTo: '/requests', pathMatch: 'full' },
+{
+    path: '',
+    loadComponent: () => import('./pages/dashboard-page').then(m => m.DashboardPage),
+    title: 'Dashboard · Northline Job Manager',
+},
 {
     path: 'requests',
     component: RequestListPage,
