@@ -10,6 +10,11 @@ export const routes: Routes = [
     title: 'Quote requests · Northline Job Manager',
 },
 {
+    path: 'requests/new',
+    loadComponent: () => import('./pages/new-request-page').then(m => m.NewRequestPage),
+    title: 'New request · Northline Job Manager',
+},
+{
     path: 'requests/:id',
     // Lazy loading: this page's code downloads only when someone opens a request 
     loadComponent: () => import('./pages/request-details-page').then(m => m.RequestDetailsPage),

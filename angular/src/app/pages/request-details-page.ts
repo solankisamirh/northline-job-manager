@@ -27,6 +27,9 @@ import { StatusActions } from '../components/status-actions';
           <h1>{{ r.customerName }}</h1>
           <app-status-badge [status]="r.status" />
         </div>
+                @if (created() === 'true' && !saved()) {
+          <p class="success" role="status">Request created.</p>
+        }
 
         <div class="details-grid">
           <div class="panel">
@@ -63,6 +66,8 @@ export class RequestDetailsPage {
 
   // Filled from the URL's :id (withComponentInputBinding)
   readonly id = input.required<string>();
+  // Filled from ?created=true after a new request is saved
+  readonly created = input<string>();
 
   protected readonly request = signal<QuoteRequest | null>(null);
   protected readonly error = signal<string | null>(null);
