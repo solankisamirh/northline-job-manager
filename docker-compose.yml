@@ -1,0 +1,11 @@
+  api:
+    build: ./api
+    image: northline-api
+    ports:
+      - "5280:8080"
+    env_file:
+      - api/api.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Cors__AllowedOrigins__3: http://localhost:8081
+    restart: unless-stopped
