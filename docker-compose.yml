@@ -1,3 +1,4 @@
+services:
   api:
     build: ./api
     image: northline-api
@@ -8,4 +9,16 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       Cors__AllowedOrigins__3: http://localhost:8081
+    restart: unless-stopped
+
+  react:
+    build:
+      context: ./react
+      args:
+        VITE_API_URL: http://localhost:5280
+    image: northline-react
+    ports:
+      - "8081:80"
+    depends_on:
+      - api
     restart: unless-stopped
